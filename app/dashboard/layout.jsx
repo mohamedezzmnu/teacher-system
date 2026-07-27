@@ -5,6 +5,7 @@ const navItems = [
   { href: '/dashboard', label: 'لوحة التحكم', icon: '🏠' },
   { href: '/students', label: 'الطلاب', icon: '👨‍🎓' },
   { href: '/groups', label: 'المجموعات', icon: '👥' },
+  { href: '/schedule', label: 'الجدول', icon: '📅' },
 ];
 
 export default function DashboardLayout({ children }) {
