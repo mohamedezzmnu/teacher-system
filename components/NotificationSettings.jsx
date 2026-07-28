@@ -48,7 +48,18 @@ export default function NotificationSettings() {
         // تجاهل لو الـ service worker مسجلش لسه
       }
 
-      const { data } = await supabase.from('notification_settings').select('*').limit(1).maybeSingle();
+      let { data } = await supabase.from('notification_settings').select('*').limit(1).maybeSingle();
+
+      // لو الصف مش موجود، اعمله دلوقتي
+      if (!data) {
+        const { data: created } = await supabase
+          .from('notification_settings')
+          .insert({ day_before: false, hour_before: true, min_30_before: true, min_10_before: true })
+          .select()
+          .single();
+        data = created;
+      }
+
       setSettings(data);
       setLoading(false);
     };
@@ -116,7 +127,15 @@ export default function NotificationSettings() {
     const updated = { ...settings, [key]: newValue };
     setSettings(updated);
 
-    await supabase.from('notification_settings').update({ [key]: newValue }).eq('id', settings.id);
+    const { error } = await supabase
+      .from('notification_settings')
+      .update({ [key]: newValue })
+      .eq('id', settings.id);
+
+    if (error) {
+      setMessage('حصل خطأ أثناء حفظ الإعداد، جرب تاني');
+      setSettings(settings); // رجّع القيمة القديمة
+    }
   };
 
   if (loading) {
