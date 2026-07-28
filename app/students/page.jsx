@@ -95,12 +95,11 @@ export default function StudentsPage() {
     loadData();
   };
 
-
   const togglePaid = async (student) => {
-  const newValue = !student.paid;
-  setStudents((prev) => prev.map((s) => (s.id === student.id ? { ...s, paid: newValue } : s)));
-  await supabase.from('students').update({ paid: newValue }).eq('id', student.id);
-};
+    const newValue = !student.paid;
+    setStudents((prev) => prev.map((s) => (s.id === student.id ? { ...s, paid: newValue } : s)));
+    await supabase.from('students').update({ paid: newValue }).eq('id', student.id);
+  };
 
   const grades = [...new Set(students.map((s) => s.grade))];
 
@@ -111,8 +110,8 @@ export default function StudentsPage() {
       (s.groups?.name || '').toLowerCase().includes(search.toLowerCase());
     const matchesGrade = !filterGrade || s.grade === filterGrade;
     const matchesGroup = !filterGroup || s.group_id === filterGroup;
-const matchesPaid = !filterPaid || (filterPaid === 'paid' ? s.paid : !s.paid);
-return matchesSearch && matchesGrade && matchesGroup && matchesPaid;
+    const matchesPaid = !filterPaid || (filterPaid === 'paid' ? s.paid : !s.paid);
+    return matchesSearch && matchesGrade && matchesGroup && matchesPaid;
   });
 
   return (
@@ -154,16 +153,15 @@ return matchesSearch && matchesGrade && matchesGroup && matchesPaid;
             <option key={g.id} value={g.id}>{g.name}</option>
           ))}
         </select>
-
         <select
-  value={filterPaid}
-  onChange={(e) => setFilterPaid(e.target.value)}
-  className="border rounded-lg p-2 text-right"
->
-  <option value="">كل حالات الدفع</option>
-  <option value="paid">دفعوا</option>
-  <option value="unpaid">لسه</option>
-</select>
+          value={filterPaid}
+          onChange={(e) => setFilterPaid(e.target.value)}
+          className="border rounded-lg p-2 text-right"
+        >
+          <option value="">كل حالات الدفع</option>
+          <option value="paid">دفعوا</option>
+          <option value="unpaid">لسه</option>
+        </select>
       </div>
 
       {loading ? (
@@ -179,18 +177,6 @@ return matchesSearch && matchesGrade && matchesGroup && matchesPaid;
                 <th className="p-3 text-sm font-medium text-gray-500">الصف</th>
                 <th className="p-3 text-sm font-medium text-gray-500">المجموعة</th>
                 <th className="p-3 text-sm font-medium text-gray-500">رقم ولي الأمر</th>
-                <td className="p-3">
-  <button
-    onClick={() => togglePaid(s)}
-    className={`text-xs px-3 py-1 rounded-full transition ${
-      s.paid
-        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-        : 'bg-red-100 text-red-700 hover:bg-red-200'
-    }`}
-  >
-    {s.paid ? 'دفع ✓' : 'لسه'}
-  </button>
-</td>
                 <th className="p-3 text-sm font-medium text-gray-500">الدفع</th>
                 <th className="p-3 text-sm font-medium text-gray-500">إجراءات</th>
               </tr>
@@ -214,6 +200,18 @@ return matchesSearch && matchesGrade && matchesGroup && matchesPaid;
                     )}
                   </td>
                   <td className="p-3 text-gray-500">{s.parent_phone || '-'}</td>
+                  <td className="p-3">
+                    <button
+                      onClick={() => togglePaid(s)}
+                      className={`text-xs px-3 py-1 rounded-full transition ${
+                        s.paid
+                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                          : 'bg-red-100 text-red-700 hover:bg-red-200'
+                      }`}
+                    >
+                      {s.paid ? 'دفع ✓' : 'لسه'}
+                    </button>
+                  </td>
                   <td className="p-3">
                     <div className="flex gap-2">
                       <button
