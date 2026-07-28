@@ -23,6 +23,7 @@ export default function StudentsPage() {
   const [search, setSearch] = useState('');
   const [filterGrade, setFilterGrade] = useState('');
   const [filterGroup, setFilterGroup] = useState('');
+  const [filterPaid, setFilterPaid] = useState('');
 
   const loadData = async () => {
     setLoading(true);
@@ -94,6 +95,13 @@ export default function StudentsPage() {
     loadData();
   };
 
+
+  const togglePaid = async (student) => {
+  const newValue = !student.paid;
+  setStudents((prev) => prev.map((s) => (s.id === student.id ? { ...s, paid: newValue } : s)));
+  await supabase.from('students').update({ paid: newValue }).eq('id', student.id);
+};
+
   const grades = [...new Set(students.map((s) => s.grade))];
 
   const filteredStudents = students.filter((s) => {
@@ -103,7 +111,8 @@ export default function StudentsPage() {
       (s.groups?.name || '').toLowerCase().includes(search.toLowerCase());
     const matchesGrade = !filterGrade || s.grade === filterGrade;
     const matchesGroup = !filterGroup || s.group_id === filterGroup;
-    return matchesSearch && matchesGrade && matchesGroup;
+const matchesPaid = !filterPaid || (filterPaid === 'paid' ? s.paid : !s.paid);
+return matchesSearch && matchesGrade && matchesGroup && matchesPaid;
   });
 
   return (
@@ -145,6 +154,16 @@ export default function StudentsPage() {
             <option key={g.id} value={g.id}>{g.name}</option>
           ))}
         </select>
+
+        <select
+  value={filterPaid}
+  onChange={(e) => setFilterPaid(e.target.value)}
+  className="border rounded-lg p-2 text-right"
+>
+  <option value="">كل حالات الدفع</option>
+  <option value="paid">دفعوا</option>
+  <option value="unpaid">لسه</option>
+</select>
       </div>
 
       {loading ? (
@@ -160,6 +179,19 @@ export default function StudentsPage() {
                 <th className="p-3 text-sm font-medium text-gray-500">الصف</th>
                 <th className="p-3 text-sm font-medium text-gray-500">المجموعة</th>
                 <th className="p-3 text-sm font-medium text-gray-500">رقم ولي الأمر</th>
+                <td className="p-3">
+  <button
+    onClick={() => togglePaid(s)}
+    className={`text-xs px-3 py-1 rounded-full transition ${
+      s.paid
+        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+        : 'bg-red-100 text-red-700 hover:bg-red-200'
+    }`}
+  >
+    {s.paid ? 'دفع ✓' : 'لسه'}
+  </button>
+</td>
+                <th className="p-3 text-sm font-medium text-gray-500">الدفع</th>
                 <th className="p-3 text-sm font-medium text-gray-500">إجراءات</th>
               </tr>
             </thead>
