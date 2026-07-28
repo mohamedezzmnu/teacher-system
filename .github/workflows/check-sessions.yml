@@ -1,0 +1,16 @@
+name: Check Sessions and Send Notifications
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check-sessions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call check-sessions endpoint
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/check-sessions"
